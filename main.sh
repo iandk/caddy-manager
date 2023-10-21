@@ -1,4 +1,9 @@
 #!/bin/bash
+domain=""
+username=""
+userdir=""
+
+
 source actions/require_root_user.sh
 source actions/create_site.sh
 source actions/list_sites.sh
