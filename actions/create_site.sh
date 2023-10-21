@@ -1,7 +1,7 @@
-domain=""
-username=""
-
 create_site() {
+    OS_PHP_VERSION="8.2"
+    CADDY_USERNAME="caddy"
+
     get_site_details
     setup_system_user
     create_folder_structure
@@ -13,7 +13,7 @@ create_site() {
 
 
 get_site_details() {
-    username=$(dialog --clear --inputbox "Enter username:" 8 40 3>&1 1>&2 2>&3 3>&-)
+    username=`dialog --stdout --clear --inputbox "Enter username:" 8 40`
     exit_status=$?
     clear
     if [ $exit_status != 0 ]; then
@@ -27,8 +27,8 @@ get_site_details() {
         exit 1
     fi
 
-    domain=$(dialog --clear --inputbox "Enter domain:" 8 40 3>&1 1>&2 2>&3 3>&-)
-    exit_status=$?
+    domain=`dialog --stdout --clear --inputbox "Enter domain:" 8 40`
+        exit_status=$?
     clear
     if [ $exit_status != 0 ]; then
         clear
@@ -39,12 +39,10 @@ get_site_details() {
 }
 
 setup_system_user() {
-
-
-    useradd -m "$username"
-    usermod --shell /bin/bash "$username"
-    usermod -a -G "$username" "$CADDY_USERNAME"
-    passwd "$username"
+    useradd -m $username
+    usermod --shell /bin/bash $username
+    usermod -a -G $username $CADDY_USERNAME
+    passwd $username
     echo "$username,$domain" >> /opt/site_accounts.txt
     dialog --clear --title "Success" --msgbox "User $username successfully created" 5 40
     clear
@@ -62,7 +60,8 @@ create_folder_structure() {
 }
 
 create_php_fpm_pool() {
-    cp ../conf/www.conf $userdir/conf/www.conf
+    pwd
+    cp conf/www.conf $userdir/conf/www.conf
     chown $username:$username $userdir/conf/www.conf
     chmod 770 $userdir/conf/www.conf
     sed -i -e "s/{{USERNAME}}/${username}/g" \
