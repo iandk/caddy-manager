@@ -81,6 +81,23 @@ $domain {
         split .php
         index index.php
     }
+    header {
+		Strict-Transport-Security max-age=31536000
+		Permissions-Policy interest-cohort=()
+		X-Content-Type-Options nosniff
+		X-Frame-Options SAMEORIGIN
+		Referrer-Policy no-referrer
+		X-XSS-Protection "1; mode=block"
+		X-Permitted-Cross-Domain-Policies none
+		X-Robots-Tag "noindex, nofollow"
+		-X-Powered-By
+	}
+    @forbidden {
+		path /build/* /tests/* /config/* /lib/* /3rdparty/* /templates/* /data/*
+		path /.* /autotest* /occ* /issue* /indie* /db_* /console*
+		not path /.well-known/*
+	}
+    error @forbidden 403
 }
 EOF
     caddy fmt $userdir/conf/Caddyfile --overwrite
