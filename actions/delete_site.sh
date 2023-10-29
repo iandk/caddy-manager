@@ -1,4 +1,6 @@
 delete_site() {
+    OS_PHP_VERSION="8.2"
+    
     if [[ ! -f /opt/site_accounts.txt ]] || [[ ! -s /opt/site_accounts.txt ]]; then
         dialog --title "Error" --msgbox "No accounts to delete" 5 40
         clear
