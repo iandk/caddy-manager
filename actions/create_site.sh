@@ -83,22 +83,36 @@ $domain {
         index index.php
     }
     header {
-		Strict-Transport-Security max-age=31536000
-		Permissions-Policy interest-cohort=()
-		X-Content-Type-Options nosniff
-		X-Frame-Options SAMEORIGIN
-		Referrer-Policy no-referrer
-		X-XSS-Protection "1; mode=block"
-		X-Permitted-Cross-Domain-Policies none
-		X-Robots-Tag "noindex, nofollow"
-		-X-Powered-By
+	Strict-Transport-Security max-age=31536000
+	Permissions-Policy interest-cohort=()
+	X-Content-Type-Options nosniff
+	X-Frame-Options SAMEORIGIN
+	Referrer-Policy no-referrer
+	X-XSS-Protection "1; mode=block"
+	X-Permitted-Cross-Domain-Policies none
+	X-Robots-Tag "noindex, nofollow"
+	-X-Powered-By
 	}
     @forbidden {
-		path /build/* /tests/* /config/* /lib/* /3rdparty/* /templates/* /data/*
-		path /.* /autotest* /occ* /issue* /indie* /db_* /console*
-		not path /.well-known/*
+        path /build/* /tests/* /config/* /lib/* /3rdparty/* /templates/* /data/*
+        path /.* /autotest* /occ* /issue* /indie* /db_* /console*
+	not path /.well-known/*
 	}
     error @forbidden 403
+
+    # Handling the .well-known paths
+    redir /.well-known/carddav /remote.php/dav/ 301
+    redir /.well-known/caldav /remote.php/dav/ 301
+    handle_path /.well-known/acme-challenge/* {
+        try_files {path} {path}/
+        file_server
+    }
+    handle_path /.well-known/pki-validation/* {
+        try_files {path} {path}/
+        file_server
+    }
+    redir /.well-known/* /index.php{uri} 301
+    
 }
 EOF
     caddy fmt $userdir/conf/Caddyfile --overwrite
