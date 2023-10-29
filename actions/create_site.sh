@@ -67,8 +67,8 @@ create_php_fpm_pool() {
     sed -i -e "s/{{USERNAME}}/${username}/g" \
            -e "s/-fpm.sock/-${username}-fpm.sock/g" \
            -e "s/\[www\]/[${username}]/g" "$userdir/conf/www.conf"
-    echo "include=${userdir}conf/www.conf" >> "/etc/php/${OS_PHP_VERSION}/fpm/php-fpm.conf"
-    echo "php_admin_value[opcache.restrict_api] = /home/${username}/public" >> "$userdir/conf/www.conf"
+    echo -e "\ninclude=${userdir}conf/www.conf" >> "/etc/php/${OS_PHP_VERSION}/fpm/php-fpm.conf"
+    echo -e "\nphp_admin_value[opcache.restrict_api] = /home/${username}/public" >> "$userdir/conf/www.conf"
     service "php${OS_PHP_VERSION}-fpm" restart
 }
 
