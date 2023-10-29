@@ -13,6 +13,7 @@ opcache.interned_strings_buffer=8
 opcache.max_accelerated_files=100000
 opcache.memory_consumption=512
 opcache.save_comments=1
+opcache.validate_permission = 1
 opcache.revalidate_freq=1" >> /etc/php/8.2/fpm/php.ini
 service php8.2-fpm restart
 

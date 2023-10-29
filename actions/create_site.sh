@@ -42,7 +42,7 @@ setup_system_user() {
     useradd -m $username
     usermod --shell /bin/bash $username
     usermod -a -G $username $CADDY_USERNAME
-    passwd $username
+    # passwd $username
     echo "$username,$domain" >> /opt/site_accounts.txt
     dialog --clear --title "Success" --msgbox "User $username successfully created" 5 40
     clear
@@ -68,6 +68,7 @@ create_php_fpm_pool() {
            -e "s/-fpm.sock/-${username}-fpm.sock/g" \
            -e "s/\[www\]/[${username}]/g" "$userdir/conf/www.conf"
     echo "include=${userdir}conf/www.conf" >> "/etc/php/${OS_PHP_VERSION}/fpm/php-fpm.conf"
+    echo "php_admin_value[opcache.restrict_api] = /home/${username}/public" >> "$userdir/conf/www.conf"
     service "php${OS_PHP_VERSION}-fpm" restart
 }
 
@@ -117,8 +118,8 @@ set_default_page() {
     <script src="https://cdn.tailwindcss.com"></script>
     </head>
     <body>
-    <div class="flex h-screen flex-col justify-center text-center bg-slate-950">
-    <h1 class="text-7xl font-bold text-white">$domain</h1>
+    <div class="flex h-screen flex-col justify-center text-center ">
+    <h1 class="text-2xl md:text-4xl lg:text-7xl font-bold text-slate-950 tracking-tight">$domain</h1>
     </div>
     </body>
     </html>
