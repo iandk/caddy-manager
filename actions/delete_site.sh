@@ -1,6 +1,7 @@
 delete_site() {
     OS_PHP_VERSION="8.2"
-    
+    CADDY_USERNAME="caddy"
+
     if [[ ! -f /opt/site_accounts.txt ]] || [[ ! -s /opt/site_accounts.txt ]]; then
         dialog --title "Error" --msgbox "No accounts to delete" 5 40
         clear
@@ -39,6 +40,7 @@ delete_site() {
             
             # Delete the user
             rm -r /home/$username_to_delete
+            gpasswd -d $CADDY_USERNAME $username_to_delete
             deluser "$username_to_delete"
             dialog --title "Success" --msgbox "Deleted account $username_to_delete" 5 40
         else
