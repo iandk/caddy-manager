@@ -22,6 +22,11 @@ delete_site() {
         clear
 
         if [ $confirm -eq 0 ]; then
+            # MySQL Database and User Deletion
+            mysql -u root -e "DROP DATABASE IF EXISTS \`${username_to_delete}_db\`;"
+            mysql -u root -e "DROP USER IF EXISTS '${username_to_delete}'@'localhost';"
+            mysql -u root -e "FLUSH PRIVILEGES;"
+
             sed -i "/^$username_to_delete,/d" /opt/site_accounts.txt
 
             # Remove the include and import lines from PHP-FPM and Caddy configurations
