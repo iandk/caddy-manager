@@ -145,12 +145,13 @@ EOF
 create_database() {
     password=$(openssl rand -base64 12)
     mysql -u root <<EOF
-CREATE DATABASE ${username}_db;
+CREATE DATABASE \`${username}_db\`;
 CREATE USER '${username}'@'localhost' IDENTIFIED BY '$password';
-GRANT ALL PRIVILEGES ON ${username}_db.* TO '${username}'@'localhost';
+GRANT ALL PRIVILEGES ON \`${username}_db\`.* TO '${username}'@'localhost';
 FLUSH PRIVILEGES;
 EOF
     echo -e "Database: ${username}_db\nUsername: ${username}\nPassword: $password" > "${userdir}/db_credentials.txt"
     chown ${username}:${username} "${userdir}/db_credentials.txt"
     chmod 600 "${userdir}/db_credentials.txt"
 }
+
