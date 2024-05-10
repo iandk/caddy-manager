@@ -1,0 +1,17 @@
+{{DOMAIN}} {
+
+    # Enable file server, compression and configure root directory
+    common {{WEBROOT}}
+
+    # Enable PHP-FPM 
+    import php-fpm {{SOCKFILE}}
+   
+    # Set miscellaneous security headers
+    import header 
+
+    # Default logging config
+    import logging {{LOGFILE}}
+
+    # ACME challenge config
+    import acme 
+}
