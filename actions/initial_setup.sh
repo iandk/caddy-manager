@@ -35,5 +35,9 @@ opcache.validate_permission = 1
 opcache.revalidate_freq=1" >> /etc/php/8.2/fpm/php.ini
 service php8.2-fpm restart
 
+# Ignore that /home folder contains group permissions
+echo "StrictModes no" >> /etc/ssh/sshd_config
+service ssh restart
+
 
 touch /opt/.easyweb
