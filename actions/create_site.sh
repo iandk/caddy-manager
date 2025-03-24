@@ -11,6 +11,8 @@ create_site() {
     create_php_fpm_pool
     create_caddy_config
     set_default_page
+    create_supervisor_config
+    create_supervisor_cron
     create_database
 }
 
