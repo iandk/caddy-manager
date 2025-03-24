@@ -156,10 +156,43 @@ set_default_page() {
 }
 
 create_supervisor_config() {
+    # Create supervisor directory if it doesn't exist
+    mkdir -p "${USERDIR}supervisor"
+    mkdir -p "${USERDIR}logs/supervisor"
+    
+    # Copy the template
+    cp "${CONF_DIR}/supervisor/supervisord.conf" "${USERDIR}conf/supervisord.conf"
+    if [ $? -ne 0 ]; then
+        echo "Error: Failed to copy Supervisor configuration file"
+        echo "Source: ${CONF_DIR}/supervisor/supervisord.conf"
+        echo "Destination: ${USERDIR}conf/supervisord.conf"
+        exit 1
+    fi
+    
+    # Replace placeholders with actual values
+    sed -i "s|{{SOCKFILE}}|${USERDIR}supervisor/supervisor.sock|g" "${USERDIR}conf/supervisord.conf"
+    sed -i "s|{{USERNAME}}|${username}|g" "${USERDIR}conf/supervisord.conf"
+    sed -i "s|{{PIDFILE}}|${USERDIR}supervisor/supervisord.pid|g" "${USERDIR}conf/supervisord.conf"
+    sed -i "s|{{SUPERVISOR_LOGFILE}}|${USERDIR}logs/supervisor/supervisord.log|g" "${USERDIR}conf/supervisord.conf"
+    sed -i "s|{{LOGS_DIR}}|${USERDIR}logs/supervisor|g" "${USERDIR}conf/supervisord.conf"
+    
+    # For the initial config, we'll use laravel-worker as the default program
+    # You can customize this as needed
+    sed -i "s|{{PROGRAM_NAME}}|laravel-worker|g" "${USERDIR}conf/supervisord.conf"
+    sed -i "s|{{COMMAND}}|php ${USERDIR}public/artisan queue:work --sleep=3 --tries=3 --max-time=3600|g" "${USERDIR}conf/supervisord.conf"
+    sed -i "s|{{NUMPROCS}}|4|g" "${USERDIR}conf/supervisord.conf"
+    
+    # Set proper permissions
+    chown -R ${username}:${username} "${USERDIR}supervisor"
+    chown -R ${username}:${username} "${USERDIR}logs/supervisor"
+    chown ${username}:${username} "${USERDIR}conf/supervisord.conf"
+    chmod 770 "${USERDIR}supervisor"
+    chmod 770 "${USERDIR}logs/supervisor"
+    
     # Add alias to avoid having to specify the configuration file each time
-    echo "export SUPERVISOR_CONF=\$HOME'/conf/supervisord.conf'" >> "${HOME}/.bashrc"
-    echo "alias supervisord='supervisord -c \$SUPERVISOR_CONF'" >> "${HOME}/.bashrc"
-    echo "alias supervisorctl='supervisorctl -c \$SUPERVISOR_CONF'" >> "${HOME}/.bashrc"
+    echo "export SUPERVISOR_CONF=\$HOME'/conf/supervisord.conf'" >> "${USERDIR}.bashrc"
+    echo "alias supervisord='supervisord -c \$SUPERVISOR_CONF'" >> "${USERDIR}.bashrc"
+    echo "alias supervisorctl='supervisorctl -c \$SUPERVISOR_CONF'" >> "${USERDIR}.bashrc"
 }
 
 create_supervisor_cron() {
